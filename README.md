@@ -32,9 +32,8 @@ The organizing principle is category over quantity. Real service desk work is no
 
 The most common ticket on any service desk. A reset is three clicks — knowing *why* the account cannot authenticate is the job.
 
----
-
-### 1.1 — Forgotten Password
+<details>
+<summary><b>1.1 — Forgotten Password (INC0010004)</b></summary>
 
 **Incident — INC0010004**
 
@@ -103,9 +102,10 @@ Resolution: Verified account was active and unlocked in ADUC but password was in
 | **FCR** | Yes |
 | **Time to resolve** | Under 5 minutes |
 
----
+</details>
 
-### 1.2 — Forced Password Change at Logon Fails
+<details>
+<summary><b>1.2 — Forced Password Change at Logon Fails (INC0010005)</b></summary>
 
 **Incident — INC0010005**
 
@@ -181,3 +181,237 @@ Resolution: Found "User must change password at next logon" flag set on KevinP's
 | **Resolution** | ADUC → right-click user → Reset Password → set new temp password → confirm user completes change at login |
 | **FCR** | Yes |
 | **Time to resolve** | Under 10 minutes |
+
+</details>
+
+<details>
+<summary><b>1.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 2 — Account Lockouts
+
+<details>
+<summary><b>2.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>2.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>2.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 3 — DNS Resolution
+
+<details>
+<summary><b>3.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>3.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>3.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 4 — Mapped Drives and File Share Access
+
+<details>
+<summary><b>4.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>4.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>4.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 5 — DHCP and Network Connectivity
+
+<details>
+<summary><b>5.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>5.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>5.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 6 — Printers
+
+<details>
+<summary><b>6.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>6.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>6.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 7 — Group Policy Not Applying
+
+<details>
+<summary><b>7.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>7.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>7.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 8 — Permissions and Access Denied
+
+<details>
+<summary><b>8.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>8.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>8.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 9 — Software Deployment Failures
+
+<details>
+<summary><b>9.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>9.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>9.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+---
+
+## Phase 10 — Data Recovery
+
+<details>
+<summary><b>10.1 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>10.2 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
+
+<details>
+<summary><b>10.3 — [TBD]</b></summary>
+
+*This ticket has not yet been documented.*
+
+</details>
