@@ -102,3 +102,82 @@ Resolution: Verified account was active and unlocked in ADUC but password was in
 | **Resolution** | ADUC → right-click user → Reset Password → set temporary password → confirm user can log in |
 | **FCR** | Yes |
 | **Time to resolve** | Under 5 minutes |
+
+---
+
+### 1.2 — Forced Password Change at Logon Fails
+
+**Incident — INC0010005**
+
+![Ticket](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/01-incident-inc0010005.png)
+
+> "I called in last week about my password and was given a temporary one. Now every time I try to log in it says I have to change my password, I try to change it, and then it just gives me an error and kicks me back to the login screen. I cannot get in at all. My name is Kevin Park."
+
+Caller: Kevin Park | Priority: 3 - Moderate | Group: Help Desk
+
+---
+
+**Reproduce**
+
+Attempted to log in to MEL-CL-01 as KevinP using the temporary password. Login failed with "The password is incorrect."
+
+![Reproduce](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/04-reproduce-login-error.png)
+
+When attempting with the correct temp password, the system prompted a forced password change but then returned an error and kicked back to the login screen.
+
+![Forced Change Prompt](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/08-verify-user-prompted-to-change.png)
+
+---
+
+**Isolate**
+
+Opened Active Directory Users and Computers on MEL-DC-01. Located Kevin Park under MelvinLab_users. On the Account tab, "User must change password at next logon" was checked. The flag forces a password change at login but the process was failing, leaving Kevin unable to authenticate at all.
+
+![Isolate](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/02-isolate-aduc-kevinp-must-change-flag.png)
+
+---
+
+**Resolve**
+
+Right-clicked Kevin Park in ADUC → Reset Password. Set a new temporary password. Confirmed the reset was applied in AD.
+
+![Fix](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/05-fix-aduc-reset-password.png)
+
+![Password Reset Confirmed](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/06-fix-password-change-confirmed.png)
+
+Verified account settings after reset.
+
+![Verify Settings](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/07-fix-aduc-verify-settings.png)
+
+Kevin was prompted to set a new password at login — confirming the reset took effect and the forced change flow completed successfully.
+
+![Kevin Changes Password](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/09-verify-password-changed-success.png)
+
+---
+
+**Verify**
+
+Logged in to MEL-CL-01 as Kevin Park with the new credentials. Desktop loaded successfully.
+
+![Verify](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/10-verify-login-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: Found "User must change password at next logon" flag set on KevinP's AD account. Reset password via ADUC and confirmed user was able to complete the password change and log in successfully.
+
+![Resolved](Phase-1-Password-Resets/1.2-Forced-Password-Change-At-Logon/11-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-002: Forced Password Change at Logon Fails**
+
+| | |
+|---|---|
+| **Symptom** | User was given a temp password but gets kicked back to the login screen when trying to change it |
+| **Check first** | ADUC → Account tab — is "User must change password at next logon" checked? |
+| **Root cause** | pwdLastSet = 0; forced change at logon flag set, password change process failing at login screen |
+| **Resolution** | ADUC → right-click user → Reset Password → set new temp password → confirm user completes change at login |
+| **FCR** | Yes |
+| **Time to resolve** | Under 10 minutes |
