@@ -185,9 +185,78 @@ Resolution: Found "User must change password at next logon" flag set on KevinP's
 </details>
 
 <details>
-<summary><b>1.3 — [TBD]</b></summary>
+<summary><b>1.3 — Smart Card Logon Required Flag Set After Password Reset (INC0010006)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010006**
+
+![Ticket](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/01-incident-inc0010006.png)
+
+> "Someone from IT already reset my password today but I still cannot get into my computer. Now it says something about a smart card being required. I have never used a smart card here. I do not know what happened or what changed. My name is Elena Vance and I really need to get back into my system."
+
+Caller: Elena Vance | Priority: 4 - Low | Group: Help Desk
+
+---
+
+**Reproduce**
+
+Attempted to log in to MEL-CL-01 as ElenaV using the reset password. Login failed with a generic "The user name or password is incorrect" error. Windows did not explicitly present a smart card prompt at the login screen — the domain controller rejected password-based authentication entirely, which is the expected behavior when SmartcardLogonRequired is enabled on the account.
+
+![Reproduce](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/03-reproduce-login-error.png)
+
+---
+
+**Isolate**
+
+Opened Active Directory Users and Computers on MEL-DC-01. Located Elena Vance under MelvinLab_users. On the Account tab, "Smart card is required for interactive logon" was checked. This flag causes Windows to reject all password-based authentication at the domain controller level regardless of whether the password is correct — the login screen shows a generic failure rather than a smart card prompt, which makes this fault difficult to diagnose without checking the account directly in ADUC.
+
+![Isolate](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/02-isolate-aduc-smartcard-checked.png)
+
+---
+
+**Resolve**
+
+Unchecked "Smart card is required for interactive logon" on ElenaV's Account tab and applied the change. Then reset the password via right-click → Reset Password and enabled "User must change password at next logon" as a security precaution.
+
+![Fix - Reset Password](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/04-fix-aduc-reset-password.png)
+
+![Fix - Reset Confirmed](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/05-fix-password-reset-confirmed.png)
+
+---
+
+**Verify**
+
+Elena was prompted to change her password at next logon — confirming authentication was restored and the forced change flow completed successfully.
+
+![Verify - Must Change Password](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/06-verify-must-change-password.png)
+
+![Verify - Elena Sets New Password](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/07-verify-elena-sets-new-password.png)
+
+![Verify - Password Changed](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/08-verify-password-changed.png)
+
+Logged in to MEL-CL-01 as Elena Vance with the new credentials. Desktop loaded successfully.
+
+![Verify - Login Success](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/09-verify-login-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: Found "Smart card is required for interactive logon" flag enabled on ElenaV's AD account. This caused Windows to reject password-based authentication entirely, presenting as a generic login failure. Unchecked the SmartcardLogonRequired flag, reset the password, and enabled forced change at next logon. User authenticated and set a new password successfully.
+
+![Resolved](Phase-1-Password-Resets/1.3-SmartCard-Logon-Required/10-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-003: Smart Card Required Flag Blocks Login After Password Reset**
+
+| | |
+|---|---|
+| **Symptom** | Password was reset by IT but user still cannot log in; error shows as generic "incorrect password" with no smart card prompt |
+| **Check first** | ADUC → Account tab → "Smart card is required for interactive logon" |
+| **Root cause** | SmartcardLogonRequired flag enabled on the account; domain controller rejects password-based authentication entirely |
+| **Resolution** | ADUC → user properties → Account tab → uncheck SmartcardLogonRequired → reset password → confirm user can log in |
+| **FCR** | Yes |
+| **Time to resolve** | Under 10 minutes |
 
 </details>
 
