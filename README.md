@@ -265,9 +265,76 @@ Resolution: Found "Smart card is required for interactive logon" flag enabled on
 ## Phase 2 — Account Lockouts
 
 <details>
-<summary><b>2.1 — [TBD]</b></summary>
+<summary><b>2.1 — Standard Account Lockout (INC0010025)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010025**
+
+![Ticket](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/01-incident-inc0010025.png)
+
+> "My account is locked and I cannot log in this morning. I have not done anything different. My name is Marcus Thorne."
+
+Caller: Marcus Thorne | Priority: 3 - Moderate | Group: Help Desk
+
+---
+
+**Reproduce**
+
+Attempted to log in to MEL-CL-01 as MarcusT. Login failed immediately with "The referenced account is currently locked and may not be logged on to."
+
+![Reproduce](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/02-reproduce-login-error.png)
+
+---
+
+**Isolate**
+
+Opened Active Directory Users and Computers on MEL-DC-01. Located Marcus Thorne under MelvinLab_users. On the Account tab, the message "Unlock account. This account is currently locked out on this Active Directory Domain Controller." confirmed the account was locked. The checkbox is unchecked by default — its presence and the accompanying message are the lockout indicators in ADUC.
+
+![Isolate](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/03-isolate-aduc-locked.png)
+
+---
+
+**Resolve**
+
+Right-clicked Marcus Thorne in ADUC → Reset Password. Entered a temporary password, checked "Unlock account for user," and enabled "User must change password at next logon."
+
+![Fix](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/04-fix-aduc-reset-password.png)
+
+![Password Changed Confirmation](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/05-fix-password-changed.png)
+
+---
+
+**Verify**
+
+Marcus was prompted to change his password at next logon — confirming the account was unlocked and authentication was restored.
+
+![Verify - Must Change Password](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/06-verify-must-change-password.png)
+
+![Verify - Marcus Sets Password](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/07-verify-marcus-sets-password.png)
+
+Logged in to MEL-CL-01 as Marcus Thorne with the new credentials. Desktop loaded successfully.
+
+![Verify - Login Success](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/08-verify-login-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: Account confirmed locked in ADUC via Account tab lockout message. Unlocked account and reset password via ADUC. User was able to log in and set a new password successfully.
+
+![Resolved](Phase-2-Account-Lockouts/2.1-Account-Lockout-Standard/09-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-004: Standard Account Lockout**
+
+| | |
+|---|---|
+| **Symptom** | User cannot log in; error states account is locked |
+| **Check first** | ADUC → user properties → Account tab — look for "This account is currently locked out on this Active Directory Domain Controller." |
+| **Root cause** | Account locked after exceeding failed logon threshold (policy: 5 attempts) |
+| **Resolution** | ADUC → right-click user → Reset Password → check "Unlock account for user" → confirm user can log in |
+| **FCR** | Yes |
+| **Time to resolve** | Under 5 minutes |
 
 </details>
 
