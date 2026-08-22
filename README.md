@@ -357,9 +357,68 @@ Resolution: Account confirmed locked in ADUC via Account tab lockout message. Un
 ## Phase 3 — DNS Resolution
 
 <details>
-<summary><b>3.1 — [TBD]</b></summary>
+<summary><b>3.1 — DNS Pointed Off Domain Controller (INC0010023)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010023**
+
+![Ticket](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/01-incident-inc0010023.png)
+
+> "My computer stopped working this morning. I cannot get to any websites, I cannot access my network drives, I cannot reach anything on the network. It was all working fine yesterday and I have not changed any settings. My name is Liam O'Connor."
+
+Caller: Liam O'Connor | Priority: 3 - Moderate | Group: Service Desk
+
+---
+
+**Reproduce**
+
+Attempted to ping the domain controller by hostname from MEL-CL-01. The request failed immediately — "Ping request could not find host mel-dc-01.melvinlab.local. Please check the name and try again." The machine could not resolve any domain names, confirming the reported symptoms.
+
+![Reproduce](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/02-reproduce-ping-failure.png)
+
+---
+
+**Isolate**
+
+Ran `ipconfig /all` on MEL-CL-01. The DNS Servers field under Ethernet adapter Ethernet 2 showed `10.10.10.99` — an IP address with no responding host on the network. The correct DNS server for this domain is the domain controller at `192.168.10.1`. With DNS pointed at a dead address, no hostname resolution is possible — network drives, domain resources, and internet access all fail at the DNS layer before any connection is attempted.
+
+![Isolate](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/03-isolate-ipconfig-bad-dns.png)
+
+---
+
+**Resolve**
+
+Opened Network Connections (`ncpa.cpl`) on MEL-CL-01. Right-clicked Ethernet 2 → Properties → Internet Protocol Version 4 (TCP/IPv4) → Properties. Changed the Preferred DNS server from `10.10.10.99` to `192.168.10.1` (the domain controller) and clicked OK.
+
+![Fix](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/04-fix-dns-corrected.png)
+
+---
+
+**Verify**
+
+Re-ran `ping mel-dc-01.melvinlab.local` from Command Prompt. The hostname resolved and replies came back from `192.168.10.1`, confirming DNS resolution was restored and the domain controller was reachable by name.
+
+![Verify](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/05-verify-ping-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: DNS server on the client adapter was misconfigured — pointing to `10.10.10.99`, a non-existent address on the network. Updated the preferred DNS server to `192.168.10.1` (MEL-DC-01). Hostname resolution restored immediately. All domain resources, network drives, and external connectivity returned to normal.
+
+![Resolved](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/06-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-007: Client DNS Misconfigured — All Network Resources Unreachable**
+
+| | |
+|---|---|
+| **Symptom** | User cannot reach any network resources, drives, or websites; ping by hostname fails immediately |
+| **Check first** | `ipconfig /all` on client — look at DNS Servers field on the active adapter |
+| **Root cause** | DNS server set to a non-existent IP; all hostname resolution fails silently at the DNS layer |
+| **Resolution** | `ncpa.cpl` → adapter properties → TCP/IPv4 → set DNS to domain controller IP (`192.168.10.1`) |
+| **FCR** | Yes |
+| **Time to resolve** | Under 5 minutes |
 
 </details>
 
