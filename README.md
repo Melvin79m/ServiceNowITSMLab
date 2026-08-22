@@ -387,9 +387,11 @@ Ran `ipconfig /all` on MEL-CL-01. The DNS Servers field under Ethernet adapter E
 
 **Resolve**
 
-Opened Network Connections (`ncpa.cpl`) on MEL-CL-01. Right-clicked Ethernet 2 → Properties → Internet Protocol Version 4 (TCP/IPv4) → Properties. Changed the Preferred DNS server from `10.10.10.99` to `192.168.10.1` (the domain controller) and clicked OK.
+Opened Network Connections (`ncpa.cpl`) on MEL-CL-01. Since adapter settings require administrative credentials, a UAC prompt appeared — entered admin credentials to proceed. Right-clicked Ethernet 2 → Properties → Internet Protocol Version 4 (TCP/IPv4) → Properties. Changed the Preferred DNS server from `10.10.10.99` to `192.168.10.1` (the domain controller) and clicked OK.
 
-![Fix](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/04-fix-dns-corrected.png)
+![Fix - Admin Auth](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/04a-fix-admin-credentials.png)
+
+![Fix - DNS Corrected](Phase-3-DNS-Resolution/3.1-DNS-Pointed-Off-Domain-Controller/04-fix-dns-corrected.png)
 
 ---
 
