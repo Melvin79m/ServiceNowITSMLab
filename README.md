@@ -407,9 +407,68 @@ Resolution: Located Event ID 4740 in the Security log on MEL-DC-01. The Caller C
 </details>
 
 <details>
-<summary><b>2.3 — [TBD]</b></summary>
+<summary><b>2.3 — Recurring Account Lockout — Scheduled Task Using Stale Credentials (INC0010021)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010021**
+
+![Ticket](Phase-2-Account-Lockouts/2.3-Recurring-Lockout-Scheduled-Task/01-incident-inc0010021.png)
+
+> "This is the third time today my account has locked. IT unlocked it twice already and within a few minutes it locks again on its own. I am not at my computer doing anything when it happens. I cannot get any work done. My name is David Cho."
+
+Caller: David Cho | Priority: 2 - High | Group: Help Desk
+
+---
+
+**Reproduce**
+
+Attempted to log in to MEL-CL-01 as DavidC. Login failed with "The referenced account is currently locked out and may not be logged on to." — confirming the account was locked despite prior unlocks.
+
+![Reproduce](Phase-2-Account-Lockouts/2.3-Recurring-Lockout-Scheduled-Task/02-reproduce-login-locked.png)
+
+---
+
+**Isolate**
+
+Opened Task Scheduler on MEL-DC-01. Under Task Scheduler Library, a task named **HealthCheckService** was present — not a built-in Windows task. The task was configured to run every 3 minutes and was using DavidC's credentials. Each execution was submitting bad authentication attempts, which tripped the lockout threshold and re-locked the account automatically — explaining why unlocking never held.
+
+![Isolate](Phase-2-Account-Lockouts/2.3-Recurring-Lockout-Scheduled-Task/03-isolate-task-scheduler.png)
+
+---
+
+**Resolve**
+
+Deleted the HealthCheckService task from Task Scheduler to stop the recurring authentication failures. Then opened Active Directory Users and Computers, located David Cho under MelvinLab_users, and unlocked his account on the Account tab.
+
+![Resolve](Phase-2-Account-Lockouts/2.3-Recurring-Lockout-Scheduled-Task/04-resolve-aduc-unlock.png)
+
+---
+
+**Verify**
+
+Logged in to MEL-CL-01 as DavidC. Desktop loaded successfully. Account remained unlocked with no recurrence after the task was removed.
+
+![Verify](Phase-2-Account-Lockouts/2.3-Recurring-Lockout-Scheduled-Task/05-verify-login-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: Traced recurring lockout to a scheduled task named HealthCheckService in Task Scheduler on MEL-DC-01. The task was running every 3 minutes using stale credentials for DavidC, triggering repeated authentication failures. Deleted the task and unlocked DavidC's account in ADUC. User verified successful login with no recurrence.
+
+![Resolved](Phase-2-Account-Lockouts/2.3-Recurring-Lockout-Scheduled-Task/06-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-006: Recurring Account Lockout — Background Process Using Stale Credentials**
+
+| | |
+|---|---|
+| **Symptom** | Account keeps re-locking minutes after being unlocked; user is not at the machine when it happens |
+| **Check first** | Task Scheduler on DC → Task Scheduler Library — look for non-standard tasks running on a short interval |
+| **Root cause** | Scheduled task running under the user's credentials with an outdated password, submitting repeated failed auth attempts |
+| **Resolution** | Delete the rogue scheduled task → unlock account in ADUC → confirm no recurrence |
+| **FCR** | No — standard unlock fails; root cause must be found first |
+| **Time to resolve** | 15–20 minutes |
 
 </details>
 
