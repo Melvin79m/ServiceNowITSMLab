@@ -339,9 +339,70 @@ Resolution: Account confirmed locked in ADUC via Account tab lockout message. Un
 </details>
 
 <details>
-<summary><b>2.2 — [TBD]</b></summary>
+<summary><b>2.2 — Account Lockout — Event 4740 Source Trace (INC0010017)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010017**
+
+![Ticket](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/01-incident-inc0010017.png)
+
+> "I got locked out of my account this morning and had IT unlock it for me. A few minutes later it was locked again. I am not entering my password wrong. Something keeps locking me out and I don't know what it is. My name is Samira Haddad."
+
+Caller: Samira Haddad | Priority: 3 - Moderate | Group: Help Desk
+
+---
+
+**Reproduce**
+
+Attempted to log in to MEL-CL-01 as SamiraH. Login failed with "The referenced account is currently locked out and may not be logged on to." — confirming the account was locked again after a prior unlock.
+
+![Reproduce](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/02-reproduce-login-locked.png)
+
+---
+
+**Isolate**
+
+Opened Event Viewer on MEL-DC-01. Navigated to Windows Logs → Security. Located Event ID 4740 — the Windows Account Lockout event. The event detail showed SamiraH as the locked account and the Caller Computer Name field identified the machine where the failed authentication attempts originated. This is the key field for tracing lockout sources when the user reports no wrongdoing on their end.
+
+![Isolate](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/03-isolate-event-4740.png)
+
+---
+
+**Resolve**
+
+Opened Active Directory Users and Computers on MEL-DC-01. Located Samira Haddad under MelvinLab_users. On the Account tab, the lockout indicator was present — checked "Unlock account" to clear the lockout and applied.
+
+![Resolve - Account Locked](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/04a-resolve-aduc-locked.png)
+
+![Resolve - Account Unlocked](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/04b-resolve-aduc-unlocked.png)
+
+---
+
+**Verify**
+
+Logged in to MEL-CL-01 as SamiraH. The account was no longer locked — authentication proceeded and the desktop loaded successfully.
+
+![Verify](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/05-verify-login-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: Located Event ID 4740 in the Security log on MEL-DC-01. The Caller Computer Name field in the event identified the source of the authentication failures that triggered the lockout. Unlocked SamiraH's account in ADUC. User verified able to log in successfully.
+
+![Resolved](Phase-2-Account-Lockouts/2.2-Event-4740-Lockout-Trace/06-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-005: Account Lockout — Trace Source via Event ID 4740**
+
+| | |
+|---|---|
+| **Symptom** | User's account keeps locking out despite not entering the wrong password |
+| **Check first** | Event Viewer on DC → Windows Logs → Security → Event ID 4740 |
+| **Root cause** | Authentication failures originating from a specific machine, identified via the Caller Computer Name field in the 4740 event |
+| **Resolution** | Identify source machine from Event ID 4740 → unlock account in ADUC → investigate source machine for stale credentials or background process |
+| **FCR** | No — source investigation required |
+| **Time to resolve** | 10–15 minutes |
 
 </details>
 
