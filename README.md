@@ -615,9 +615,76 @@ Resolution: Client DNS was set to 8.8.8.8 (Google public DNS). External sites re
 </details>
 
 <details>
-<summary><b>3.3 — [TBD]</b></summary>
+<summary><b>3.3 — DNS Suffix Search List Misconfigured — Short Names Fail, FQDNs Work (INC0010029)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010029**
+
+![Ticket](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/01-incident-inc0010029.png)
+
+> "I am getting errors when I try to connect to servers using their names. If I use the IP address directly it connects fine, but the hostname fails every time. My DNS settings look correct when I check them. My name is Thomas Anderson."
+
+Caller: Thomas Anderson | Priority: 3 - Moderate | Group: Service Desk
+
+---
+
+**Reproduce**
+
+Ran `nslookup mel-dc-01` on MEL-CL-01. DNS queried the name with the suffix `example.com` from the search list — returning `mel-dc-01.example.com` with no address. Short name resolution failed.
+
+![Reproduce - Short Name Fails](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/02a-reproduce-short-name-fails.png)
+
+Ran `nslookup mel-dc-01.melvinlab.local` — the fully qualified domain name resolved successfully, returning both DC addresses. This confirmed DNS itself was functional; the problem was in how Windows was completing short names.
+
+![Reproduce - FQDN Works](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/02b-reproduce-fqdn-works.png)
+
+---
+
+**Isolate**
+
+Ran `ipconfig /all` on MEL-CL-01. DNS server was correctly set to `10.10.10.25` (MEL-DC-01) — consistent with Thomas's report that his settings looked right. However, the DNS Suffix Search List showed `example.com` and `test.local`. Windows appends each suffix in that list when resolving short names, so `mel-dc-01` became `mel-dc-01.example.com` — a name that does not exist in DNS.
+
+![Isolate - ipconfig](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/03a-isolate-ipconfig-wrong-suffix.png)
+
+Opened Advanced TCP/IP Settings on the adapter → DNS tab. The "Append these DNS suffixes" list showed `example.com` and `test.local` — `melvinlab.local` was absent entirely.
+
+![Isolate - Advanced DNS](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/03b-isolate-advanced-dns-wrong.png)
+
+---
+
+**Resolve**
+
+Removed `example.com` and `test.local` from the suffix list and added `melvinlab.local`. Applied the change.
+
+![Resolve](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/04-resolve-suffix-corrected.png)
+
+---
+
+**Verify**
+
+Ran `nslookup mel-dc-01` — resolved successfully to `mel-dc-01.melvinlab.local` with correct addresses. Short name resolution was restored.
+
+![Verify](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/05-verify-nslookup-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: DNS server was correctly set to 10.10.10.25 but the DNS suffix search list was misconfigured — set to example.com and test.local instead of melvinlab.local. Windows appended the wrong suffixes when resolving short names, causing all internal hostname lookups to fail silently while FQDNs still worked. Removed incorrect suffixes and added melvinlab.local via Advanced adapter DNS settings. Short name resolution restored.
+
+![Resolved](Phase-3-DNS-Resolution/3.3-DNS-Suffix-Search-List-Misconfigured/06-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-009: DNS Suffix Search List Misconfigured — Short Names Fail, FQDNs Work**
+
+| | |
+|---|---|
+| **Symptom** | Connecting by IP works; connecting by hostname fails; user reports DNS settings look correct |
+| **Check first** | `ipconfig /all` → DNS Suffix Search List — does it contain the domain (melvinlab.local)? |
+| **Root cause** | Global DNS suffix search list set to wrong domains; Windows appends incorrect suffixes to short names |
+| **Resolution** | `ncpa.cpl` → adapter → TCP/IPv4 → Advanced → DNS tab → remove wrong suffixes → add `melvinlab.local` |
+| **FCR** | Yes |
+| **Time to resolve** | Under 10 minutes |
 
 </details>
 
