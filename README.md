@@ -545,9 +545,72 @@ Resolution: DNS server on the client adapter was misconfigured — pointing to `
 </details>
 
 <details>
-<summary><b>3.2 — [TBD]</b></summary>
+<summary><b>3.2 — DNS Set to Public Server — Internal Domain Unreachable (INC0010026)</b></summary>
 
-*This ticket has not yet been documented.*
+**Incident — INC0010026**
+
+![Ticket](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/01-incident-inc0010026.png)
+
+> "I can browse the internet just fine but I cannot access any internal resources. The file share is unreachable, internal websites are down, and I cannot connect to any company servers by name. Started this morning. My name is Aaliyah Okafor."
+
+Caller: Aaliyah Okafor | Priority: 3 - Moderate | Group: Service Desk
+
+---
+
+**Reproduce**
+
+Opened a browser on MEL-CL-01 — external sites loaded without issue, confirming internet connectivity was intact.
+
+![Reproduce - Internet Works](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/02a-reproduce-internet-works.png)
+
+Attempted to ping the domain controller by hostname. The request failed — "Ping request could not find host mel-dc-01.melvinlab.local." Internal name resolution was broken despite internet working normally.
+
+![Reproduce - Internal Fails](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/02b-reproduce-internal-fails.png)
+
+---
+
+**Isolate**
+
+Ran `ipconfig /all` on MEL-CL-01. The DNS Servers field showed `8.8.8.8` — Google's public DNS. A public DNS server can resolve external names like google.com but has no knowledge of the private domain `melvinlab.local`. Internal hostnames, file shares, and domain resources all fail at the DNS layer while internet browsing continues to work normally.
+
+![Isolate](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/03-isolate-ipconfig-bad-dns.png)
+
+---
+
+**Resolve**
+
+Opened Network Connections (`ncpa.cpl`) on MEL-CL-01. Right-clicked the adapter → Properties → Internet Protocol Version 4 (TCP/IPv4) → Properties. Changed the Preferred DNS server from `8.8.8.8` to `192.168.10.1` (MEL-DC-01) and left the Alternate DNS blank.
+
+![Resolve](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/04-resolve-dns-corrected.png)
+
+---
+
+**Verify**
+
+Re-ran `ping mel-dc-01.melvinlab.local`. The hostname resolved and replies came back from `192.168.10.1`, confirming internal name resolution was restored.
+
+![Verify](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/05-verify-ping-success.png)
+
+---
+
+**Ticket Closed**
+
+Resolution: Client DNS was set to 8.8.8.8 (Google public DNS). External sites resolved normally but internal domain names failed because 8.8.8.8 has no knowledge of the private domain. Updated DNS to 192.168.10.1 (MEL-DC-01) via adapter properties. Internal name resolution restored immediately.
+
+![Resolved](Phase-3-DNS-Resolution/3.2-DNS-Pointed-To-Public-Server/06-ticket-resolved.png)
+
+---
+
+**KB Article — INC-KB-008: DNS Set to Public Server — Internal Domain Unreachable**
+
+| | |
+|---|---|
+| **Symptom** | Internet browsing works normally but internal servers, file shares, and domain resources are unreachable by name |
+| **Check first** | `ipconfig /all` on client — look at DNS Servers field on the active adapter |
+| **Root cause** | DNS set to a public server (e.g. 8.8.8.8) that resolves external names but has no records for the private domain |
+| **Resolution** | `ncpa.cpl` → adapter properties → TCP/IPv4 → set DNS to domain controller IP (`192.168.10.1`), leave alternate blank |
+| **FCR** | Yes |
+| **Time to resolve** | Under 5 minutes |
 
 </details>
 
